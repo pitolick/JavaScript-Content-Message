@@ -1,0 +1,77 @@
+# This is a sample workflows file for GitHub Actions.
+#
+# This workflow detects a tag, creates a package with the tag, then automatically uploads the package to GitHub releases.
+#
+# At first, please change PACKAGE_NAME to your package name.
+# Also, if you need:
+# - change FILES_TO_ARCIVE
+# - comment out the composer install section
+# - uncomment npm install section
+
+# Workflow Document: https://help.github.com/en/articles/workflow-syntax-for-github-actions
+#
+name: release
+
+# see: https://help.github.com/en/articles/workflow-syntax-for-github-actions#on
+on:
+  create:
+    tags: []
+    # - v*.*.*  # to use filters. wildcard characters are supported.
+
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobs
+jobs:
+  release:
+    name: Release
+
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ubuntu-latest
+
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idsteps
+    steps:
+
+    # [official action] clone code to workspace
+    # https://github.com/actions/checkout
+    - uses: actions/checkout@v1
+
+
+    # install modules by composer. remove this step it if you don't need.
+    # - name: composer install
+      # run: composer install
+
+    # install modules by npm.
+    # - name: npm clean install
+    #   run: npm ci
+
+    # remove this step if you want to update the version manually.
+    # NOTICE: ref_type exists only for events of type create. see https://developer.github.com/v3/activity/events/types/#createevent
+    - name: add version
+      env:
+        PACKAGE_NAME: "index"
+      run: |
+        # retrieve tag and replase version number in file.
+        export CREATE_EVENT_REF_TYPE=$(jq --raw-output .ref_type "$GITHUB_EVENT_PATH")
+        export TAGNAME=$(jq --raw-output .ref "$GITHUB_EVENT_PATH")
+        sed -i -e "s/{release version}/${TAGNAME}/g" ${PACKAGE_NAME}.php
+    # create a zip acrive for installing to WordPress.
+    # please change FILES_TO_ARCIVE to your project name.
+    - name: create archive
+      env:
+        PACKAGE_NAME: "JavaScript-If-Display"
+        FILES_TO_ARCIVE: "*.php *.md LICENSE vendor/*"
+      run: zip -r ${PACKAGE_NAME}.zip ${FILES_TO_ARCIVE}
+
+    # upload zip arvive by ghr.
+    # `secrets.GITHUB_TOKEN` for using ghr is issued temporarily when executing action. No special settings are required.
+    # ghr - Easily ship your project to your user using Github Releases : https://deeeet.com/ghr/
+    - name: upload to github release
+      env:
+        PACKAGE_NAME: "JavaScript-If-Display"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GOPATH: /home/runner/go
+      run: |
+        # retrieve tag and replase version number in file.
+        export CREATE_EVENT_REF_TYPE=$(jq --raw-output .ref_type "$GITHUB_EVENT_PATH")
+        export TAGNAME=$(jq --raw-output .ref "$GITHUB_EVENT_PATH")
+        # install ghr, then upload archve.
+        go get -u github.com/tcnksm/ghr
+        ${GOPATH}/bin/ghr -b "${PACKAGE_NAME} ${TAGNAME}" -replace ${TAGNAME} ${PACKAGE_NAME}.zip
