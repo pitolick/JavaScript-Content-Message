@@ -1,0 +1,36 @@
+{
+  "name": "js-content-message",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "ts": "tsc --rootDir src/ts --outDir dist/js -w",
+    "postcss": "postcss dist/css/*.css -u autoprefixer --replace",
+    "sass": "sass --style=compressed src/scss:dist/css",
+    "scss": "onchange src/scss/*.scss -- run-s sass postcss",
+    "watch": "run-p scss ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pitolick/JavaScript-Content-Message.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pitolick/JavaScript-Content-Message/issues"
+  },
+  "homepage": "https://github.com/pitolick/JavaScript-Content-Message#readme",
+  "browserslist": [
+    "last 2 versions",
+    "> 1% in JP"
+  ],
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "browserslist": "^4.14.2",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.0.2",
+    "postcss-cli": "^7.1.2",
+    "sass": "^1.26.10",
+    "typescript": "^4.0.2"
+  }
+}
