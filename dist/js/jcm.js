@@ -19,7 +19,7 @@ if (jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type 
         var diff_day = Math.floor(diff_date / (1000 * 60 * 60 * 24));
         // 表示条件比較
         var compare_time = jcm_reference_type_text === 'year' ? diff_year : diff_day;
-        if (compare_time > jcm_reference_date_text) {
+        if (compare_time >= jcm_reference_date_text) {
             // メッセージを取得
             if (jcm_content !== null) {
                 var jcm_text = jcm_content.innerHTML;

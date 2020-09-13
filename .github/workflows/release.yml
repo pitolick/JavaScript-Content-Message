@@ -56,8 +56,8 @@ jobs:
     # please change FILES_TO_ARCIVE to your project name.
     - name: create archive
       env:
-        PACKAGE_NAME: "JavaScript-If-Display"
-        FILES_TO_ARCIVE: "*.php *.md LICENSE vendor/*"
+        PACKAGE_NAME: "JavaScript-Content-Message"
+        FILES_TO_ARCIVE: "*.php *.md LICENSE vendor/* dist/*.css dist/*.js"
       run: zip -r ${PACKAGE_NAME}.zip ${FILES_TO_ARCIVE}
 
     # upload zip arvive by ghr.
@@ -65,7 +65,7 @@ jobs:
     # ghr - Easily ship your project to your user using Github Releases : https://deeeet.com/ghr/
     - name: upload to github release
       env:
-        PACKAGE_NAME: "JavaScript-If-Display"
+        PACKAGE_NAME: "JavaScript-Content-Message"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GOPATH: /home/runner/go
       run: |

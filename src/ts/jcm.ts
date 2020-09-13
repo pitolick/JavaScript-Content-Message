@@ -19,7 +19,7 @@ if(jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type !
 
 		// 表示条件比較
 		let compare_time = jcm_reference_type_text === 'year' ? diff_year : diff_day;
-		if( compare_time > jcm_reference_date_text ) {
+		if( compare_time >= jcm_reference_date_text ) {
 			// メッセージを取得
 			if(jcm_content !== null) {
 				let jcm_text = jcm_content.innerHTML;
