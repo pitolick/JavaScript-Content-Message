@@ -57,7 +57,7 @@ jobs:
     - name: create archive
       env:
         PACKAGE_NAME: "JavaScript-Content-Message"
-        FILES_TO_ARCIVE: "*.php *.md LICENSE vendor/* dist/*.css dist/*.js"
+        FILES_TO_ARCIVE: "*.php *.md *.css *.js LICENSE vendor/* dist/*"
       run: zip -r ${PACKAGE_NAME}.zip ${FILES_TO_ARCIVE}
 
     # upload zip arvive by ghr.
