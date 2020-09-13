@@ -51,7 +51,7 @@ function jcm_load_scripts() {
 function jcm_add_content($content) {
 	// 比較基準タイプ設定
 	if (get_option('jcm_option_reference') === 'modified_date') {
-		$content_time = get_the_modified_date('Y/m/d'); // 更新日
+		$content_time = get_the_modified_date('Y/m/d'); // 最終更新日
 	} else {
 		$content_time = get_the_date('Y/m/d'); // 投稿日
 	}
@@ -128,7 +128,7 @@ function jcm_option_reference() {
 	?>
 	<fieldset>
 		<label><input name="jcm_option_reference" type="radio" value="posted_date" <?php echo get_option( 'jcm_option_reference' ) === false ? 'checked="checked"' : checked( 'posted_date', get_option( 'jcm_option_reference' ) ); ?> />投稿日</label>
-		<label><input name="jcm_option_reference" type="radio" value="modified_date" <?php checked( 'modified_date', get_option( 'jcm_option_reference' ) ); ?> />更新日</label><br>
+		<label><input name="jcm_option_reference" type="radio" value="modified_date" <?php checked( 'modified_date', get_option( 'jcm_option_reference' ) ); ?> />最終更新日</label><br>
 		<input type="number" name="jcm_reference_date" min="0" max="9999" value="<?php echo get_option( 'jcm_reference_date' ) === false ? '1' : get_option( 'jcm_reference_date' ); ?>">
 		<select name="jcm_reference_type">
 			<option value="year" <?php echo get_option( 'jcm_reference_type' ) === false ? 'selected' : selected( 'year', get_option( 'jcm_reference_type' ) ); ?>>年</option>
