@@ -47,6 +47,8 @@ function jcm_load_scripts() {
  * %year%:記事と現在の年差
  * %monthnum%:記事と現在の月差（1ヶ月あたり30日で計算のため多少ブレあり）
  * %day%:記事と現在の日差
+ * %post_date%:記事の投稿日
+ * %modified_date%:記事の最終更新日
  */
 function jcm_add_content($content) {
 	// 比較基準タイプ設定
@@ -73,11 +75,26 @@ function jcm_add_content($content) {
 	} else {
 		$message_text = 'この記事は%year%年以上前に書かれたものです。<br>情報が古い可能性があります。';
 	}
+	// 日付フォーマット設定
+	if (get_option( 'jcm_date_format_check' ) ==='custom' && get_option( 'jcm_date_format' )) {
+		$date_format = get_option( 'jcm_date_format' );
+	} else {
+		$date_format = get_option( 'date_format' );;
+	}
 
-	// DOM構築
+
+	/* DOM構築 */
+	// 比較基準タイプ
 	$message = '<input type="hidden" id="jcm_content_time" value="'.$content_time.'" style="display:none;">';
+	// 比較基準日数
 	$message .= '<input type="hidden" id="jcm_reference_date" value="'.$reference_date.'" style="display:none;">';
+	// 比較基準日or年
 	$message .= '<input type="hidden" id="jcm_reference_type" value="'.$reference_type.'" style="display:none;">';
+	// 最終更新日
+	$message .= '<input type="hidden" id="jcm_modified_date" value="'.get_the_modified_date($date_format).'" style="display:none;">';
+	// 投稿日
+	$message .= '<input type="hidden" id="jcm_post_date" value="'.get_the_date($date_format).'" style="display:none;">';
+	// メッセージDOM
 	$message .= '<div id="jcm_content_message" style="display:none;">'.$message_text.'</div>';
 	if (get_option('jcm_option_css') === 'custom') {
 		$message .= '<style>'.get_option('jcm_option_css_custom').'</style>';
@@ -107,6 +124,8 @@ function jcm_field() {
 	// 表示メッセージ
 	add_settings_field( 'jcm_option_message', '表示メッセージ', 'jcm_option_message', 'writing', 'jcm_option_section' );
 	register_setting( 'writing', 'jcm_option_message' );
+	register_setting( 'writing', 'jcm_date_format_check' );
+	register_setting( 'writing', 'jcm_date_format' );
 	// CSS設定
 	add_settings_field( 'jcm_option_css', 'CSS設定', 'jcm_option_css', 'writing', 'jcm_option_section' );
 	register_setting( 'writing', 'jcm_option_css' );
@@ -149,7 +168,10 @@ function jcm_option_message() {
 			<li><code>%year%</code>：記事と現在の年差</li>
 			<li><code>%monthnum%</code>：記事と現在の月差（1ヶ月あたり30日で計算のため多少ブレあり）</li>
 			<li><code>%day%</code>：記事と現在の日差</li>
+			<li><code>%post_date%</code>：記事の投稿日</li>
+			<li><code>%modified_date%</code>：記事の最終更新日</li>
 		</ul>
+		<label><input name="jcm_date_format_check" type="checkbox" value="custom" <?php echo checked( 'custom', get_option( 'jcm_date_format_check' ) ); ?> /><code>%post_date%</code><code>%modified_date%</code>で使用する日付フォーマットをカスタマイズする</label><input type="text" name="jcm_date_format" id="jcm_date_format" value="<?php echo get_option( 'jcm_date_format' ) === false ? get_option( 'date_format' ) : get_option( 'jcm_date_format' ); ?>">
 	</fieldset>
   <?php
 }

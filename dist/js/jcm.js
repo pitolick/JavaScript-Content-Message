@@ -3,10 +3,14 @@ var jcm_content = document.getElementById('jcm_content_message');
 var jcm_post_time = document.getElementById('jcm_content_time');
 var jcm_reference_date = document.getElementById('jcm_reference_date');
 var jcm_reference_type = document.getElementById('jcm_reference_type');
-if (jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type !== null) {
+var jcm_modified_date = document.getElementById('jcm_modified_date');
+var jcm_post_date = document.getElementById('jcm_post_date');
+if (jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type !== null && jcm_modified_date !== null && jcm_post_date !== null) {
     var jcm_post_time_text = jcm_post_time.value;
     var jcm_reference_date_text = Number(jcm_reference_date.value);
     var jcm_reference_type_text = jcm_reference_type.value;
+    var jcm_modified_date_text = jcm_modified_date.value;
+    var jcm_post_date_text = jcm_post_date.value;
     if (jcm_post_time_text !== null) {
         // 記事の日付
         var post_date = new Date(jcm_post_time_text.toString());
@@ -28,6 +32,8 @@ if (jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type 
                     jcm_text = jcm_text.replace(/%year%/, diff_year.toString());
                     jcm_text = jcm_text.replace(/%monthnum%/, diff_month.toString());
                     jcm_text = jcm_text.replace(/%day%/, diff_day.toString());
+                    jcm_text = jcm_text.replace(/%post_date%/, jcm_modified_date_text.toString());
+                    jcm_text = jcm_text.replace(/%modified_date%/, jcm_post_date_text.toString());
                     // DOM書き換え
                     jcm_content.innerText = '';
                     jcm_content.insertAdjacentHTML('afterbegin', jcm_text);
