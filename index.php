@@ -50,7 +50,8 @@ function jcm_load_scripts() {
  * %post_date%:記事の投稿日
  * %modified_date%:記事の最終更新日
  */
-function jcm_add_content($content) {
+function jcm_add_content() {
+	$content = get_the_content();
 	// 比較基準タイプ設定
 	if (get_option('jcm_option_reference') === 'modified_date') {
 		$content_time = get_the_modified_date('Y/m/d'); // 最終更新日
@@ -82,7 +83,6 @@ function jcm_add_content($content) {
 		$date_format = get_option( 'date_format' );;
 	}
 
-
 	/* DOM構築 */
 	// 比較基準タイプ
 	$message = '<input type="hidden" id="jcm_content_time" value="'.$content_time.'" style="display:none;">';
@@ -95,14 +95,35 @@ function jcm_add_content($content) {
 	// 投稿日
 	$message .= '<input type="hidden" id="jcm_post_date" value="'.get_the_date($date_format).'" style="display:none;">';
 	// メッセージDOM
-	$message .= '<div id="jcm_content_message" style="display:none;">'.$message_text.'</div>';
+	$message .= '<div id="jcm_content_message" class="jcm_content_'.get_option('jcm_option_output').'" style="display:none;">'.$message_text.'</div>';
 	if (get_option('jcm_option_css') === 'custom') {
 		$message .= '<style>'.get_option('jcm_option_css_custom').'</style>';
 	}
 
-	return $message.$content;
+	/* 出力 */
+	if (get_option('jcm_option_output') === 'after') {
+		return $content.$message;
+	} elseif(get_option('jcm_option_output') === 'template') {
+		return $message;
+	} else {
+		return $message.$content;
+	}
+
 }
-add_filter('the_content', 'jcm_add_content','10');
+if(get_option('jcm_option_output') !== 'template') {
+	add_filter('the_content', 'jcm_add_content','10');
+}
+
+/**
+ * テンプレートファイル記述用関数
+ * jcm_option_outputがtemplateのときだけメッセージをreturn
+ */
+function jcm_add_content_temp() {
+	if(get_option('jcm_option_output') === 'template') {
+		return jcm_add_content();
+	}
+	return false;
+}
 
 /**
  * 管理画面に設定項目追加
@@ -130,6 +151,9 @@ function jcm_field() {
 	add_settings_field( 'jcm_option_css', 'CSS設定', 'jcm_option_css', 'writing', 'jcm_option_section' );
 	register_setting( 'writing', 'jcm_option_css' );
 	register_setting( 'writing', 'jcm_option_css_custom' );
+	// 出力設定
+	add_settings_field( 'jcm_option_output', '出力設定', 'jcm_option_output', 'writing', 'jcm_option_section' );
+	register_setting( 'writing', 'jcm_option_output' );
 }
 add_filter( 'admin_init', 'jcm_field' );
 /* 管理画面設定項目DOM */
@@ -196,6 +220,20 @@ function jcm_option_css() {
 			<p>記述されたCSSはstyleタグに括られて出力されます。</p>
 			<textarea name="jcm_option_css_custom" class="large-text code" rows="3"><?php echo get_option( 'jcm_option_css_custom' ) === false ? '#jcm_content_message{}' : get_option( 'jcm_option_css_custom' ); ?></textarea>
 		</div>
+	</fieldset>
+  <?php
+}
+function jcm_option_output() {
+	// 出力設定
+	?>
+	<fieldset>
+		<input id="jcm_option_output_before" name="jcm_option_output" type="radio" value="before" <?php echo get_option( 'jcm_option_output' ) === false ? 'checked="checked"' : checked( 'before', get_option( 'jcm_option_output' ) ); ?> />
+		<label for="jcm_option_output_before">本文の前</label>
+		<input id="jcm_option_output_after" name="jcm_option_output" type="radio" value="after" <?php echo checked( 'after', get_option( 'jcm_option_output' ) ); ?> />
+		<label for="jcm_option_output_after">本文の後</label>
+		<input id="jcm_option_output_template" name="jcm_option_output" type="radio" value="template" <?php echo checked( 'template', get_option( 'jcm_option_output' ) ); ?> />
+		<label for="jcm_option_output_template">自動出力せずテンプレートタグを使用する</label>
+		<p>テンプレートタグ：<code>&lt;?php if(function_exists('jcm_add_content_temp')){echo jcm_add_content_temp();} ?&gt;</code></p>
 	</fieldset>
   <?php
 }

@@ -3,11 +3,19 @@
 	font-weight: bold;
 	line-height: 1.5;
 	color: #ff6664;
-	margin: 0 auto 30px;
+	margin: 20px auto;
 	padding: 10px 20px;
 	border: 2px solid #ff6664;
 	border-left: none;
 	border-right: none;
 	box-sizing: border-box;
 	background-color: #ffefef;
+	&.jcm_content_before {
+		margin-top: 0;
+		margin-bottom: 30px;
+	}
+	&.jcm_content_after {
+		margin-top: 30px;
+		margin-bottom: 0;
+	}
 }
