@@ -12,10 +12,9 @@ License: GPL2
 */
 
 /**
- * CSS・JavaScript読み込み設定
+ * 表示投稿タイプの判定
  */
-add_action('wp_enqueue_scripts', 'jcm_load_scripts');
-function jcm_load_scripts() {
+function jcm_post_type() {
 	// 設定項目にチェックのある投稿タイプだけ表示
 	if (get_option('jcm_option_post_type_single') === false) {
 		$jcm_is_single = true;
@@ -32,8 +31,21 @@ function jcm_load_scripts() {
 		$jcm_is_page = false;
 	}
 
-	// CSS・JavaScript読み込み
+	// フラグ結果を返す
 	if($jcm_is_single || $jcm_is_page) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * CSS・JavaScript読み込み設定
+ */
+add_action('wp_enqueue_scripts', 'jcm_load_scripts');
+function jcm_load_scripts() {
+	// CSS・JavaScript読み込み
+	if(jcm_post_type()) {
 		$plugin_url = plugin_dir_url( __FILE__ );
 		if(get_option( 'jcm_option_css' ) !== 'custom') {
 			wp_enqueue_style('jcm-css', $plugin_url.'dist/css/jcm.css');
@@ -58,7 +70,7 @@ function jcm_add_content() {
 	} else {
 		$content_time = get_the_date('Y/m/d'); // 投稿日
 	}
-	// 比較基準日数設定
+	// 比較基準日数設定（数値入力&基準日0を想定）
 	if (get_option('jcm_reference_date') === false) {
 		$reference_date = '1';
 	} else {
@@ -80,7 +92,7 @@ function jcm_add_content() {
 	if (get_option( 'jcm_date_format_check' ) ==='custom' && get_option( 'jcm_date_format' )) {
 		$date_format = get_option( 'jcm_date_format' );
 	} else {
-		$date_format = get_option( 'date_format' );;
+		$date_format = get_option( 'date_format' );
 	}
 
 	/* DOM構築 */
@@ -101,12 +113,16 @@ function jcm_add_content() {
 	}
 
 	/* 出力 */
-	if (get_option('jcm_option_output') === 'after') {
-		return $content.$message;
-	} elseif(get_option('jcm_option_output') === 'template') {
-		return $message;
+	if(jcm_post_type() === true) {
+		if (get_option('jcm_option_output') === 'after') {
+			return $content.$message;
+		} elseif(get_option('jcm_option_output') === 'template') {
+			return $message;
+		} else {
+			return $message.$content;
+		}
 	} else {
-		return $message.$content;
+		return $content;
 	}
 
 }
