@@ -32,8 +32,8 @@ if (jcm_post_time !== null && jcm_reference_date !== null && jcm_reference_type 
                     jcm_text = jcm_text.replace(/%year%/, diff_year.toString());
                     jcm_text = jcm_text.replace(/%monthnum%/, diff_month.toString());
                     jcm_text = jcm_text.replace(/%day%/, diff_day.toString());
-                    jcm_text = jcm_text.replace(/%post_date%/, jcm_modified_date_text.toString());
-                    jcm_text = jcm_text.replace(/%modified_date%/, jcm_post_date_text.toString());
+                    jcm_text = jcm_text.replace(/%post_date%/, jcm_post_date_text.toString());
+                    jcm_text = jcm_text.replace(/%modified_date%/, jcm_modified_date_text.toString());
                     // DOM書き換え
                     jcm_content.innerText = '';
                     jcm_content.insertAdjacentHTML('afterbegin', jcm_text);
